@@ -1,0 +1,43 @@
+# authen.yaml - SECURE CONFIGURATION TEMPLATE
+# Store this file, but keep actual credentials in environment variables or secret manager
+
+google_cloud:
+  project_id: "mystic-pier-481708-c2"
+  region: "us-central1"
+  
+  # Enabled APIs (verify these are active)
+  enabled_apis:
+    - iam.googleapis.com
+    - cloudresourcemanager.googleapis.com
+    - iamcredentials.googleapis.com
+    - sts.googleapis.com
+  
+  # Service account references (create these in Console)
+  service_accounts:
+    ai_orchestrator:
+      id: "ai-orchestrator@mystic-pier-481708-c2.iam.gserviceaccount.com"
+      credentials_source: "GOOGLE_APPLICATION_CREDENTIALS environment variable"
+      minimal_roles:
+        - "roles/iam.serviceAccountTokenCreator"
+        - "roles/logging.logWriter"
+    
+    data_processor:
+      id: "data-processor@mystic-pier-481708-c2.iam.gserviceaccount.com"
+      minimal_roles:
+        - "roles/pubsub.publisher"
+        - "roles/storage.objectViewer"
+
+# Security Configuration
+security:
+  encryption_in_transit: "TLS 1.2+ required"
+  private_service_connect: "Enabled for sensitive APIs"
+  audit_logging: "Enabled for all services"
+  budget_alert_threshold: "$50 monthly"
+
+# AI Tool Specific Configuration
+ai_tools:
+  setup_instructions: |
+    1. Each AI tool gets its own service account
+    2. Set GOOGLE_APPLICATION_CREDENTIALS to tool-specific key
+    3. Use client libraries for authentication
+    4. Implement automatic token refresh
